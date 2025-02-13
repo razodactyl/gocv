@@ -276,7 +276,14 @@ endif
 endif
 
 # Do everything.
-install: deps download sudo_pre_install_clean build sudo_install clean verify
+install:
+ifeq ($(shell uname -s),Darwin)
+	@echo "Detected macOS. Installing dependencies..."
+	brew install opencv
+	brew install pkgconfig
+endif
+	@$(MAKE) deps download sudo_pre_install_clean build sudo_install clean verify
+	@go run ./cmd/version/main.go
 
 # Do everything on Raspbian.
 install_raspi: deps download sudo_pre_install_clean build_raspi sudo_install clean verify
