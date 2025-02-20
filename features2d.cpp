@@ -94,8 +94,11 @@ struct KeyPoints AgastFeatureDetector_Detect(AgastFeatureDetector a, Mat src) {
 }
 
 BRISK BRISK_Create() {
-    // TODO: params
     return new cv::Ptr<cv::BRISK>(cv::BRISK::create());
+}
+
+BRISK BRISK_CreateWithParams(int thresh, int octaves, float patternScale) {
+    return new cv::Ptr<cv::BRISK>(cv::BRISK::create(thresh, octaves, patternScale));
 }
 
 void BRISK_Close(BRISK b) {

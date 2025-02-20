@@ -152,6 +152,14 @@ func NewBRISK() BRISK {
 	return BRISK{p: unsafe.Pointer(C.BRISK_Create())}
 }
 
+// NewBRISKWithParams returns a new BRISK algorithm with parameters
+//
+// For further details, please see:
+// https://docs.opencv.org/4.x/de/dbf/classcv_1_1BRISK.html
+func NewBRISKWithParams(thresh int, octaves int, patternScale float32) BRISK {
+	return BRISK{p: unsafe.Pointer(C.BRISK_CreateWithParams(C.int(thresh), C.int(octaves), C.float(patternScale)))}
+}
+
 // Close BRISK.
 func (b *BRISK) Close() error {
 	C.BRISK_Close((C.BRISK)(b.p))

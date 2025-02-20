@@ -47,6 +47,7 @@ void AgastFeatureDetector_Close(AgastFeatureDetector a);
 struct KeyPoints AgastFeatureDetector_Detect(AgastFeatureDetector a, Mat src);
 
 BRISK BRISK_Create();
+BRISK BRISK_CreateWithParams(int thresh, int octaves, float patternScale);
 void BRISK_Close(BRISK b);
 struct KeyPoints BRISK_Detect(BRISK b, Mat src);
 struct KeyPoints BRISK_Compute(BRISK b, Mat src, struct KeyPoints kp, Mat desc);

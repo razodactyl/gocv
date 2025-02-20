@@ -105,6 +105,47 @@ func TestBRISK(t *testing.T) {
 	}
 }
 
+func TestBRISKWithParams(t *testing.T) {
+	img := IMRead("images/face.jpg", IMReadColor)
+	if img.Empty() {
+		t.Error("Invalid Mat in BRISK test")
+	}
+	defer img.Close()
+
+	dst := NewMat()
+	defer dst.Close()
+
+	// Create BRISK with custom parameters (e.g., threshold = 30, octaves = 3, patternScale = 1.0)
+	br := NewBRISKWithParams(30, 3, 1.0)
+	defer br.Close()
+
+	kp := br.Detect(img)
+	if len(kp) < 513 {
+		t.Errorf("Invalid KeyPoint array in BRISK Detect: %d", len(kp))
+	}
+
+	mask := NewMat()
+	defer mask.Close()
+
+	kpc, desc := br.Compute(img, mask, kp)
+	defer desc.Close()
+	if len(kpc) < 512 {
+		t.Errorf("Invalid KeyPoint array in BRISK Compute: %d", len(kpc))
+	}
+	if desc.Empty() {
+		t.Error("Invalid Mat desc in BRISK Compute")
+	}
+
+	kpdc, desc2 := br.DetectAndCompute(img, mask)
+	defer desc2.Close()
+	if len(kpdc) < 512 {
+		t.Errorf("Invalid KeyPoint array in BRISK DetectAndCompute: %d", len(kpdc))
+	}
+	if desc2.Empty() {
+		t.Error("Invalid Mat desc in BRISK DetectAndCompute")
+	}
+}
+
 func TestFastFeatureDetector(t *testing.T) {
 	img := IMRead("images/face.jpg", IMReadColor)
 	if img.Empty() {
