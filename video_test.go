@@ -28,6 +28,26 @@ func TestMOG2(t *testing.T) {
 	}
 }
 
+func TestMOG2ApplyWithParams(t *testing.T) {
+	img := IMRead("images/face.jpg", IMReadColor)
+	if img.Empty() {
+		t.Error("Invalid Mat in MOG2 test")
+	}
+	defer img.Close()
+
+	dst := NewMat()
+	defer dst.Close()
+
+	mog2 := NewBackgroundSubtractorMOG2()
+	defer mog2.Close()
+
+	mog2.ApplyWithLearningRate(img, &dst, 0.01)
+
+	if dst.Empty() {
+		t.Error("Error in TestMOG2 test")
+	}
+}
+
 func TestMOG2WithParams(t *testing.T) {
 	img := IMRead("images/face.jpg", IMReadColor)
 	if img.Empty() {
@@ -42,6 +62,26 @@ func TestMOG2WithParams(t *testing.T) {
 	defer mog2.Close()
 
 	mog2.Apply(img, &dst)
+
+	if dst.Empty() {
+		t.Error("Error in TestMOG2WithParams test")
+	}
+}
+
+func TestMOG2WithParamsWithLR(t *testing.T) {
+	img := IMRead("images/face.jpg", IMReadColor)
+	if img.Empty() {
+		t.Error("Invalid Mat in MOG2 test")
+	}
+	defer img.Close()
+
+	dst := NewMat()
+	defer dst.Close()
+
+	mog2 := NewBackgroundSubtractorMOG2WithParams(250, 8, false)
+	defer mog2.Close()
+
+	mog2.ApplyWithLearningRate(img, &dst, 0.0)
 
 	if dst.Empty() {
 		t.Error("Error in TestMOG2WithParams test")

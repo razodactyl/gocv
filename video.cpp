@@ -24,6 +24,10 @@ void BackgroundSubtractorMOG2_Apply(BackgroundSubtractorMOG2 b, Mat src, Mat dst
     (*b)->apply(*src, *dst);
 }
 
+void BackgroundSubtractorMOG2_ApplyWithParams(BackgroundSubtractorMOG2 b, Mat src, Mat dst, double learningRate) {
+    (*b)->apply(*src, *dst, learningRate);
+}
+
 void BackgroundSubtractorKNN_Close(BackgroundSubtractorKNN k) {
     delete k;
 }

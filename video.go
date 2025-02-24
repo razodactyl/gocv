@@ -84,6 +84,11 @@ func (b *BackgroundSubtractorMOG2) Apply(src Mat, dst *Mat) {
 	return
 }
 
+func (b *BackgroundSubtractorMOG2) ApplyWithLearningRate(src Mat, dst *Mat, learningRate float64) {
+	C.BackgroundSubtractorMOG2_ApplyWithParams((C.BackgroundSubtractorMOG2)(b.p), src.p, dst.p, C.double(learningRate))
+	return
+}
+
 // BackgroundSubtractorKNN is a wrapper around the cv::BackgroundSubtractorKNN.
 type BackgroundSubtractorKNN struct {
 	// C.BackgroundSubtractorKNN
