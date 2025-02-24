@@ -47,6 +47,14 @@ func NewAKAZE() AKAZE {
 	return AKAZE{p: unsafe.Pointer(C.AKAZE_Create())}
 }
 
+// NewAKAZEWithParams creates a new AKAZE detector with custom parameters.
+func NewAKAZEWithParams(descriptorType, descriptorSize, descriptorChannels int, threshold float32, nOctaves, nOctaveLayers, diffusivity int) AKAZE {
+	ptr := C.AKAZE_CreateWithParams(
+		C.int(descriptorType), C.int(descriptorSize), C.int(descriptorChannels),
+		C.float(threshold), C.int(nOctaves), C.int(nOctaveLayers), C.int(diffusivity))
+	return AKAZE{p: unsafe.Pointer(ptr)}
+}
+
 // Close AKAZE.
 func (a *AKAZE) Close() error {
 	C.AKAZE_Close((C.AKAZE)(a.p))
@@ -118,6 +126,15 @@ func NewAgastFeatureDetector() AgastFeatureDetector {
 	return AgastFeatureDetector{p: unsafe.Pointer(C.AgastFeatureDetector_Create())}
 }
 
+// NewAgastFeatureDetectorWithParams creates a new AGAST feature detector with custom parameters.
+func NewAgastFeatureDetectorWithParams(threshold int, nonmaxSuppression bool, detectorType int) AgastFeatureDetector {
+	return AgastFeatureDetector{
+		p: unsafe.Pointer(C.AgastFeatureDetector_CreateWithParams(
+			C.int(threshold), C.bool(nonmaxSuppression), C.int(detectorType),
+		)),
+	}
+}
+
 // Close AgastFeatureDetector.
 func (a *AgastFeatureDetector) Close() error {
 	C.AgastFeatureDetector_Close((C.AgastFeatureDetector)(a.p))
@@ -147,7 +164,7 @@ var _ Feature2D = (*BRISK)(nil)
 // NewBRISK returns a new BRISK algorithm
 //
 // For further details, please see:
-// https://docs.opencv.org/master/d8/d30/classcv_1_1AKAZE.html
+// https://docs.opencv.org/4.x/de/dbf/classcv_1_1BRISK.html
 func NewBRISK() BRISK {
 	return BRISK{p: unsafe.Pointer(C.BRISK_Create())}
 }
@@ -278,12 +295,38 @@ type GFTTDetector struct {
 	p unsafe.Pointer
 }
 
+// GFTTDetectorParams holds parameters to create a GFTTDetector
+type GFTTDetectorParams struct {
+	MaxCorners        int
+	QualityLevel      float64
+	MinDistance       float64
+	BlockSize         int
+	UseHarrisDetector bool
+	K                 float64
+}
+
 // NewGFTTDetector returns a new GFTTDetector algorithm
 //
 // For further details, please see:
 // https://docs.opencv.org/master/df/d21/classcv_1_1GFTTDetector.html
 func NewGFTTDetector() GFTTDetector {
 	return GFTTDetector{p: unsafe.Pointer(C.GFTTDetector_Create())}
+}
+
+// NewGFTTDetectorWithParams returns a new GFTTDetector algorithm with custom parameters
+//
+// For further details, please see:
+// https://docs.opencv.org/master/df/d21/classcv_1_1GFTTDetector.html
+func NewGFTTDetectorWithParams(params GFTTDetectorParams) GFTTDetector {
+	cParams := C.GFTTDetectorParams{
+		maxCorners:        C.int(params.MaxCorners),
+		qualityLevel:      C.double(params.QualityLevel),
+		minDistance:       C.double(params.MinDistance),
+		blockSize:         C.int(params.BlockSize),
+		useHarrisDetector: C.bool(params.UseHarrisDetector),
+		k:                 C.double(params.K),
+	}
+	return GFTTDetector{p: unsafe.Pointer(C.GFTTDetector_Create_WithParams(&cParams))}
 }
 
 // Close GFTTDetector.
@@ -318,6 +361,18 @@ var _ Feature2D = (*KAZE)(nil)
 // https://docs.opencv.org/master/d3/d61/classcv_1_1KAZE.html
 func NewKAZE() KAZE {
 	return KAZE{p: unsafe.Pointer(C.KAZE_Create())}
+}
+
+// NewKazeWithParams returns a new KAZE algorithm with the specified parameters.
+func NewKazeWithParams(extended bool, upright bool, threshold float32, nOctaves int, nOctaveLayers int, diffusivity int) KAZE {
+	cExtended := C.bool(extended)
+	cUpright := C.bool(upright)
+	cThreshold := C.float(threshold)
+	cNOctaves := C.int(nOctaves)
+	cNOctaveLayers := C.int(nOctaveLayers)
+	cDiffusivity := C.int(diffusivity)
+
+	return KAZE{p: unsafe.Pointer(C.KAZE_CreateWithParams(cExtended, cUpright, cThreshold, cNOctaves, cNOctaveLayers, cDiffusivity))}
 }
 
 // Close KAZE.
@@ -389,6 +444,24 @@ type MSER struct {
 // https://docs.opencv.org/master/d3/d28/classcv_1_1MSER.html
 func NewMSER() MSER {
 	return MSER{p: unsafe.Pointer(C.MSER_Create())}
+}
+
+// NewMSERWithParams returns a new MSER algorithm with the specified parameters.
+func NewMSERWithParams(delta int, minArea int, maxArea int, maxVariation float64, minDiversity float64,
+	maxEvolution int, areaThreshold float64, minMargin float64, edgeBlurSize int) MSER {
+
+	cDelta := C.int(delta)
+	cMinArea := C.int(minArea)
+	cMaxArea := C.int(maxArea)
+	cMaxVariation := C.double(maxVariation)
+	cMinDiversity := C.double(minDiversity)
+	cMaxEvolution := C.int(maxEvolution)
+	cAreaThreshold := C.double(areaThreshold)
+	cMinMargin := C.double(minMargin)
+	cEdgeBlurSize := C.int(edgeBlurSize)
+
+	return MSER{p: unsafe.Pointer(C.MSER_CreateWithParams(cDelta, cMinArea, cMaxArea, cMaxVariation, cMinDiversity,
+		cMaxEvolution, cAreaThreshold, cMinMargin, cEdgeBlurSize))}
 }
 
 // Close MSER.

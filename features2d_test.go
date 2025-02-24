@@ -46,6 +46,47 @@ func TestAKAZE(t *testing.T) {
 	}
 }
 
+func TestAKAZEWithParams(t *testing.T) {
+	img := IMRead("images/face.jpg", IMReadColor)
+	if img.Empty() {
+		t.Error("Invalid Mat in AKAZE test")
+	}
+	defer img.Close()
+
+	dst := NewMat()
+	defer dst.Close()
+
+	ak := NewAKAZEWithParams(3, 0, 3, 0.001, 4, 4, 1)
+	defer ak.Close()
+
+	// Test Detect method
+	kp := ak.Detect(img)
+	if len(kp) < 473 {
+		t.Errorf("Invalid KeyPoint array in AKAZE test: %d", len(kp))
+	}
+
+	mask := NewMat()
+	defer mask.Close()
+
+	kpc, desc := ak.Compute(img, mask, kp)
+	defer desc.Close()
+	if len(kpc) < 473 {
+		t.Errorf("Invalid KeyPoint array in AKAZE Compute: %d", len(kpc))
+	}
+	if desc.Empty() {
+		t.Error("Invalid Mat desc in AKAZE Compute")
+	}
+
+	kpdc, desc2 := ak.DetectAndCompute(img, mask)
+	defer desc2.Close()
+	if len(kpdc) < 473 {
+		t.Errorf("Invalid KeyPoint array in AKAZE DetectAndCompute: %d", len(kpdc))
+	}
+	if desc2.Empty() {
+		t.Error("Invalid Mat desc in AKAZE DetectAndCompute")
+	}
+}
+
 func TestAgastFeatureDetector(t *testing.T) {
 	img := IMRead("images/face.jpg", IMReadColor)
 	if img.Empty() {
@@ -61,6 +102,25 @@ func TestAgastFeatureDetector(t *testing.T) {
 
 	kp := ad.Detect(img)
 	if len(kp) < 2800 {
+		t.Errorf("Invalid KeyPoint array in AgastFeatureDetector test: %d", len(kp))
+	}
+}
+
+func TestAgastFeatureDetectorWithParams(t *testing.T) {
+	img := IMRead("images/face.jpg", IMReadColor)
+	if img.Empty() {
+		t.Error("Invalid Mat in AgastFeatureDetector test")
+	}
+	defer img.Close()
+
+	dst := NewMat()
+	defer dst.Close()
+
+	ad := NewAgastFeatureDetectorWithParams(10, true, 0)
+	defer ad.Close()
+
+	kp := ad.Detect(img)
+	if len(kp) < 2137 {
 		t.Errorf("Invalid KeyPoint array in AgastFeatureDetector test: %d", len(kp))
 	}
 }
@@ -203,6 +263,35 @@ func TestGFTTDetector(t *testing.T) {
 	}
 }
 
+func TestGFTTDetectorWithParams(t *testing.T) {
+	img := IMRead("images/face.jpg", IMReadColor)
+	if img.Empty() {
+		t.Error("Invalid Mat in GFTTDetector test")
+	}
+	defer img.Close()
+
+	dst := NewMat()
+	defer dst.Close()
+
+	params := GFTTDetectorParams{
+		MaxCorners:        500,
+		QualityLevel:      0.01,
+		MinDistance:       10,
+		BlockSize:         3,
+		UseHarrisDetector: false,
+		K:                 0.04,
+	}
+
+	gft := NewGFTTDetectorWithParams(params)
+	defer gft.Close()
+
+	kp := gft.Detect(img)
+
+	if len(kp) < 323 {
+		t.Errorf("Invalid KeyPoint array in GFTTDetector test: %d", len(kp))
+	}
+}
+
 func TestKAZE(t *testing.T) {
 	img := IMRead("images/face.jpg", IMReadColor)
 	if img.Empty() {
@@ -243,6 +332,61 @@ func TestKAZE(t *testing.T) {
 	}
 }
 
+func TestKAZEWithParams(t *testing.T) {
+	// Load the image for testing
+	img := IMRead("images/face.jpg", IMReadColor)
+	if img.Empty() {
+		t.Error("Invalid Mat in KAZE With Params test")
+	}
+	defer img.Close()
+
+	// Create a destination matrix
+	dst := NewMat()
+	defer dst.Close()
+
+	// Set up the parameters for KAZE with the function NewKazeWithParams
+	extended := true
+	upright := false
+	threshold := float32(0.001)
+	nOctaves := 4
+	nOctaveLayers := 4
+	diffusivity := 1 // Based on your input parameter options (e.g., 1 could be for `cv::KAZE::DIFF_PM_G2`)
+
+	// Create a KAZE object with the specified parameters
+	k := NewKazeWithParams(extended, upright, threshold, nOctaves, nOctaveLayers, diffusivity)
+	defer k.Close()
+
+	// Detect keypoints
+	kp := k.Detect(img)
+	if len(kp) < 512 {
+		t.Errorf("Invalid KeyPoint array in KAZE With Params test: %d", len(kp))
+	}
+
+	// Create a mask (optional)
+	mask := NewMat()
+	defer mask.Close()
+
+	// Compute descriptors for the keypoints
+	kpc, desc := k.Compute(img, mask, kp)
+	defer desc.Close()
+	if len(kpc) < 512 {
+		t.Errorf("Invalid KeyPoint array in KAZE With Params Compute: %d", len(kpc))
+	}
+	if desc.Empty() {
+		t.Error("Invalid Mat desc in KAZE With Params Compute")
+	}
+
+	// Perform DetectAndCompute
+	kpdc, desc2 := k.DetectAndCompute(img, mask)
+	defer desc2.Close()
+	if len(kpdc) < 512 {
+		t.Errorf("Invalid KeyPoint array in KAZE With Params DetectAndCompute: %d", len(kpdc))
+	}
+	if desc2.Empty() {
+		t.Error("Invalid Mat desc in KAZE With Params DetectAndCompute")
+	}
+}
+
 func TestMSER(t *testing.T) {
 	img := IMRead("images/face.jpg", IMReadColor)
 	if img.Empty() {
@@ -259,6 +403,35 @@ func TestMSER(t *testing.T) {
 	kp := mser.Detect(img)
 	if len(kp) == 0 {
 		t.Errorf("Invalid KeyPoint array in MSER test: %d", len(kp))
+	}
+}
+
+func TestMSERWithParams(t *testing.T) {
+	img := IMRead("images/face.jpg", IMReadColor)
+	if img.Empty() {
+		t.Error("Invalid Mat in MSER With Params test")
+	}
+	defer img.Close()
+
+	dst := NewMat()
+	defer dst.Close()
+
+	delta := 5
+	minArea := 60
+	maxArea := 14400
+	maxVariation := 0.25
+	minDiversity := 0.2
+	maxEvolution := 200
+	areaThreshold := 1.01
+	minMargin := 0.003
+	edgeBlurSize := 5
+
+	mser := NewMSERWithParams(delta, minArea, maxArea, maxVariation, minDiversity, maxEvolution, areaThreshold, minMargin, edgeBlurSize)
+	defer mser.Close()
+
+	regions := mser.Detect(img)
+	if len(regions) == 0 {
+		t.Errorf("Invalid region detection in MSER With Params test: %d", len(regions))
 	}
 }
 

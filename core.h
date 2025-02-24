@@ -201,6 +201,15 @@ typedef struct SimpleBlobDetectorParams {
     float   thresholdStep;
 } SimpleBlobDetectorParams;
 
+typedef struct GFTTDetectorParams {
+    int maxCorners;
+    double qualityLevel;
+    double minDistance;
+    int blockSize;
+    bool useHarrisDetector;
+    double k;
+}GFTTDetectorParams;
+
 // Wrapper for an individual cv::DMatch
 typedef struct DMatch {
     int queryIdx;
